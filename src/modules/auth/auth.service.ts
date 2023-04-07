@@ -13,10 +13,15 @@ import { passwordHash, passwordResetCode } from 'src/utils/hash.util';
 import { RequestRecoveryPasswordUserDto } from './dtos/request-recovery-password-user.dto';
 import { RecoveryPasswordUserDto } from './dtos/recovery-password-user.dto';
 import { addMinutes, isAfter } from 'date-fns';
+import { SendMailProducerService } from 'src/jobs/mail/sendMail-producer-service.job';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+    private sendMailProducerService: SendMailProducerService,
+  ) {}
 
   async userExistsByEmail(email: string) {
     try {
@@ -106,12 +111,6 @@ export class AuthService {
         },
       });
 
-      // this.sendMailProducerService.sendMail({
-      //   email: user.email,
-      //   code: user.confirmation_code,
-      //   type: 'confirmationCode',
-      // });
-
       return { user_id: user.id, message: 'Conta criada com sucesso' };
     } catch (error) {
       throw error;
@@ -122,7 +121,7 @@ export class AuthService {
     try {
       const userExists = await this.userExistsByEmail(data.email);
 
-      await this.prisma.users.update({
+      const userUpdated = await this.prisma.users.update({
         where: {
           id: userExists.id,
         },
@@ -132,11 +131,10 @@ export class AuthService {
         },
       });
 
-      // this.sendMailProducerService.sendMail({
-      //   email: data.email,
-      //   code: userUpdated.password_reset_code,
-      //   type: 'resetPasswordCode',
-      // });
+      this.sendMailProducerService.sendMail({
+        email: data.email,
+        code: userUpdated.password_reset_code,
+      });
 
       return {
         message: 'Foi enviado um código de confirmação para seu e-mail',

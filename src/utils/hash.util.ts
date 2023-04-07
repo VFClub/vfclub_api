@@ -16,5 +16,5 @@ export function passwordResetCode() {
 export function fileNameHash(fileName: string) {
   const hash = createHash('SHA-1').update(fileName).digest('hex');
 
-  return `easypay/${hash.slice(0, 12)}-${fileName}`;
+  return `vfclub/${hash.slice(0, 12)}-${fileName}`;
 }
