@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 
 // controller
 import { AuthController } from './auth.controller';
@@ -27,6 +27,7 @@ import {
 // mail
 import { SendMailProducerService } from 'src/jobs/mail/sendMail-producer-service.job';
 import { SendMailConsumer } from 'src/jobs/mail/sendMail-consumer.job';
+import { CustomLoggerService } from 'src/logger/logger-service.config';
 
 @Module({
   imports: [
@@ -48,6 +49,10 @@ import { SendMailConsumer } from 'src/jobs/mail/sendMail-consumer.job';
     JwtStrategy,
     SendMailProducerService,
     SendMailConsumer,
+    {
+      provide: Logger,
+      useClass: CustomLoggerService,
+    },
   ],
   controllers: [AuthController],
 })

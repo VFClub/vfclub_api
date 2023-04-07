@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IUserProps } from 'src/@types';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -21,6 +21,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private sendMailProducerService: SendMailProducerService,
+    private logger: Logger,
   ) {}
 
   async userExistsByEmail(email: string) {
@@ -37,7 +38,11 @@ export class AuthService {
         return user;
       }
     } catch (error) {
-      throw error;
+      this.logger.error(error);
+      this.logger.error(
+        `Error when check user exists by email: ${error.message}`,
+        error.stack,
+      );
     }
   }
 
@@ -56,6 +61,8 @@ export class AuthService {
         }),
       };
     } catch (error) {
+      this.logger.error(error);
+      this.logger.error(`Error when login: ${error.message}`, error.stack);
       throw error;
     }
   }
@@ -80,6 +87,11 @@ export class AuthService {
 
       return user;
     } catch (error) {
+      this.logger.error(error);
+      this.logger.error(
+        `Error when validate user: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -113,6 +125,11 @@ export class AuthService {
 
       return { user_id: user.id, message: 'Conta criada com sucesso' };
     } catch (error) {
+      this.logger.error(error);
+      this.logger.error(
+        `Error when register user: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -140,6 +157,11 @@ export class AuthService {
         message: 'Foi enviado um código de confirmação para seu e-mail',
       };
     } catch (error) {
+      this.logger.error(error);
+      this.logger.error(
+        `Error when request recovery password: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -169,6 +191,11 @@ export class AuthService {
 
       return { message: 'Senha alterada com sucesso' };
     } catch (error) {
+      this.logger.error(error);
+      this.logger.error(
+        `Error when recovery password: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }

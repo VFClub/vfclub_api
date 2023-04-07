@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 
 import { ConfigModule } from '@nestjs/config';
 
@@ -9,6 +9,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 
 // configs
 import { transport } from './utils/configs.utils';
+import { CustomLoggerService } from './logger/logger-service.config';
 
 @Module({
   imports: [
@@ -20,6 +21,11 @@ import { transport } from './utils/configs.utils';
     }),
   ],
 
-  providers: [],
+  providers: [
+    {
+      provide: Logger,
+      useClass: CustomLoggerService,
+    },
+  ],
 })
 export class AppModule {}
