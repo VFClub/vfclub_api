@@ -11,15 +11,18 @@ datasource db {
 }
 
 model Users {
-  id                   Int       @id @default(autoincrement())
-  name                 String
-  email                String    @unique
-  phone                String    @unique
-  password             String
-  user_type            String
-  accepted_terms       Boolean?  @default(false)
-  created_at           DateTime  @default(now())
-  updated_at           DateTime?
-  password_reset_code  String?
-  code_expiration_date DateTime?
+  id                      Int       @id @default(autoincrement())
+  user_type               String // adm or player
+  name                    String
+  email                   String    @unique
+  phone                   String    @unique
+  password                String
+  accepted_terms          Boolean?  @default(false) // only player
+  created_by              Int? // only adm
+  created_at              DateTime  @default(now())
+  updated_at              DateTime?
+  password_reset_code     String?
+  account_activation_code Boolean?  @default(false) // only amd
+  account_is_active       Boolean?  @default(false) // only adm
+  code_expiration_date    DateTime?
 }

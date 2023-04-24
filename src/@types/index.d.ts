@@ -8,7 +8,7 @@ export interface IUserProps {
   id: string | number;
   email: string;
   password: string;
-  type: string;
+  user_type: string;
   activation_token: string;
   created_at: Date;
   updated_at: Date;
@@ -19,4 +19,5 @@ export interface IUserProps {
 export interface ISendMailProps {
   email: string;
   code: string;
+  type: 'resetPassword' | 'accountActivation';
 }

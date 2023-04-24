@@ -48,11 +48,16 @@ export class AuthService {
 
   async login(data: IUserProps) {
     try {
-      const user = await this.prisma.users.findUnique({
+      const user = await this.prisma.users.findFirst({
         where: {
           email: data.email,
+          user_type: data.user_type,
         },
       });
+
+      if (!user) {
+        notFoundMessage('Conta não encontrada');
+      }
 
       return {
         access_token: this.jwtService.sign({
@@ -69,7 +74,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     try {
-      const user = await this.prisma.users.findUnique({
+      const user = await this.prisma.users.findFirst({
         where: {
           email,
         },
@@ -151,6 +156,7 @@ export class AuthService {
       this.sendMailProducerService.sendMail({
         email: data.email,
         code: userUpdated.password_reset_code,
+        type: 'resetPassword',
       });
 
       return {
