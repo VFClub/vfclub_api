@@ -2,9 +2,10 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { IUserProps } from 'src/@types';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { CreatePlayerDto } from './dtos/create-player.dto';
 import { RequestRecoveryPasswordUserDto } from './dtos/request-recovery-password-user.dto';
 import { RecoveryPasswordUserDto } from './dtos/recovery-password-user.dto';
+import { CreateAdmDto } from './dtos/create-admin.dto';
 
 @Controller('/auth')
 export class AuthController {
@@ -17,8 +18,13 @@ export class AuthController {
   }
 
   @Post('/register')
-  async register(@Body() data: CreateUserDto) {
-    return this.authService.register(data);
+  async register(@Body() data: CreatePlayerDto) {
+    return this.authService.registerPlayer(data);
+  }
+
+  @Post('/register/admin')
+  async registerAdmin(@Body() data: CreateAdmDto) {
+    return this.authService.registerAdmin(data);
   }
 
   @Post('/request-recovery-password')

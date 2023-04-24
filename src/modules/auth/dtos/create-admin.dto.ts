@@ -5,7 +5,7 @@ import {
   phoneRegEx,
 } from 'src/helpers/regex.helper';
 
-export class CreateUserDto {
+export class CreateAdmDto {
   @IsNotEmpty()
   user_type: string;
 
@@ -36,5 +36,5 @@ export class CreateUserDto {
   password: string;
 
   @IsNotEmpty()
-  accepted_terms: boolean;
+  created_by: number;
 }

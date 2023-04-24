@@ -8,12 +8,13 @@ import {
 } from 'src/validations/errors-message';
 
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { CreatePlayerDto } from './dtos/create-player.dto';
 import { passwordHash, passwordResetCode } from 'src/utils/hash.util';
 import { RequestRecoveryPasswordUserDto } from './dtos/request-recovery-password-user.dto';
 import { RecoveryPasswordUserDto } from './dtos/recovery-password-user.dto';
 import { addMinutes, isAfter } from 'date-fns';
 import { SendMailProducerService } from 'src/jobs/mail/sendMail-producer-service.job';
+import { CreateAdmDto } from './dtos/create-admin.dto';
 
 @Injectable()
 export class AuthService {
@@ -101,7 +102,7 @@ export class AuthService {
     }
   }
 
-  async register(data: CreateUserDto) {
+  async registerPlayer(data: CreatePlayerDto) {
     try {
       const userAlreadyExists = await this.prisma.users.findUnique({
         where: {
@@ -109,11 +110,15 @@ export class AuthService {
         },
       });
 
+      if (data.user_type !== 'player') {
+        badRequestMessage('Tipo de usuário inválido');
+      }
+
       if (userAlreadyExists) {
         badRequestMessage('Conta já cadastrado');
       }
 
-      if (data.user_type === 'player' && !data.accepted_terms) {
+      if (!data.accepted_terms) {
         badRequestMessage('Você precisa aceitar os termos de uso');
       }
 
@@ -132,7 +137,53 @@ export class AuthService {
     } catch (error) {
       this.logger.error(error);
       this.logger.error(
-        `Error when register user: ${error.message}`,
+        `Error when register player: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
+  async registerAdmin(data: CreateAdmDto) {
+    try {
+      const userAlreadyExists = await this.prisma.users.findUnique({
+        where: {
+          email: data.email,
+        },
+      });
+
+      if (data.user_type !== 'adm') {
+        badRequestMessage('Tipo de usuário inválido');
+      }
+
+      if (userAlreadyExists) {
+        badRequestMessage('Conta já cadastrado');
+      }
+
+      const user = await this.prisma.users.create({
+        data: {
+          user_type: data.user_type,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          created_by: data.created_by,
+          account_is_active: false,
+          account_activation_code: passwordResetCode(),
+          password: await passwordHash(data.password),
+        },
+      });
+
+      this.sendMailProducerService.sendMail({
+        email: user.email,
+        code: user.password_reset_code,
+        type: 'accountActivation',
+      });
+
+      return { user_id: user.id, message: 'Conta criada com sucesso' };
+    } catch (error) {
+      this.logger.error(error);
+      this.logger.error(
+        `Error when register admin: ${error.message}`,
         error.stack,
       );
       throw error;

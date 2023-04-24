@@ -22,7 +22,7 @@ model Users {
   created_at              DateTime  @default(now())
   updated_at              DateTime?
   password_reset_code     String?
-  account_activation_code Boolean?  @default(false) // only amd
+  account_activation_code String? // only adm
   account_is_active       Boolean?  @default(false) // only adm
   code_expiration_date    DateTime?
 
