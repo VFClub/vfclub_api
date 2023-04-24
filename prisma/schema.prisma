@@ -15,7 +15,7 @@ model Users {
   user_type               String // adm or player
   name                    String
   email                   String    @unique
-  phone                   String    @unique
+  phone                   String
   password                String
   accepted_terms          Boolean?  @default(false) // only player
   created_by              Int? // only adm
@@ -25,4 +25,6 @@ model Users {
   account_activation_code Boolean?  @default(false) // only amd
   account_is_active       Boolean?  @default(false) // only adm
   code_expiration_date    DateTime?
+
+  @@unique([email, user_type], name: "email_user_type")
 }

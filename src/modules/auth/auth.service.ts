@@ -113,7 +113,7 @@ export class AuthService {
         badRequestMessage('Conta já cadastrado');
       }
 
-      if (!data.accepted_terms) {
+      if (data.user_type === 'player' && !data.accepted_terms) {
         badRequestMessage('Você precisa aceitar os termos de uso');
       }
 
