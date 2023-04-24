@@ -5,7 +5,7 @@ import {
   phoneRegEx,
 } from 'src/helpers/regex.helper';
 
-export class CreateAdmDto {
+export class CreateAdminDto {
   @IsNotEmpty()
   user_type: string;
 

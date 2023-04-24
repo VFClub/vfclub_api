@@ -9,12 +9,17 @@ import {
 
 import * as bcrypt from 'bcrypt';
 import { CreatePlayerDto } from './dtos/create-player.dto';
-import { passwordHash, passwordResetCode } from 'src/utils/hash.util';
+import {
+  activateAccountCode,
+  passwordHash,
+  passwordResetCode,
+} from 'src/utils/hash.util';
 import { RequestRecoveryPasswordUserDto } from './dtos/request-recovery-password-user.dto';
 import { RecoveryPasswordUserDto } from './dtos/recovery-password-user.dto';
 import { addMinutes, isAfter } from 'date-fns';
 import { SendMailProducerService } from 'src/jobs/mail/sendMail-producer-service.job';
-import { CreateAdmDto } from './dtos/create-admin.dto';
+import { CreateAdminDto } from './dtos/create-admin.dto';
+import { ActivateAccountAdmDto } from './dtos/activate-account.sto';
 
 @Injectable()
 export class AuthService {
@@ -32,12 +37,11 @@ export class AuthService {
           email,
         },
       });
-
       if (!user) {
         notFoundMessage('Conta não encontrada');
-      } else {
-        return user;
       }
+
+      return user;
     } catch (error) {
       this.logger.error(error);
       this.logger.error(
@@ -47,17 +51,39 @@ export class AuthService {
     }
   }
 
+  async userTypeExists(user_type: string) {
+    try {
+      if (user_type !== 'player' && user_type !== 'admin') {
+        badRequestMessage('Tipo de usuário inválido');
+      }
+    } catch (error) {
+      this.logger.error(error);
+      this.logger.error(
+        `Error when check user type exists: ${error.message}`,
+        error.stack,
+      );
+    }
+  }
+
   async login(data: IUserProps) {
     try {
-      const user = await this.prisma.users.findFirst({
+      const user = await this.prisma.users.findUnique({
         where: {
-          email: data.email,
-          user_type: data.user_type,
+          email_user_type: {
+            email: data.email,
+            user_type: data.user_type,
+          },
         },
       });
 
+      this.userTypeExists(data.user_type);
+
       if (!user) {
         notFoundMessage('Conta não encontrada');
+      }
+
+      if (data.user_type === 'admin' && !user.account_is_active) {
+        badRequestMessage('Ative sua conta para fazer login');
       }
 
       return {
@@ -104,11 +130,9 @@ export class AuthService {
 
   async registerPlayer(data: CreatePlayerDto) {
     try {
-      const userAlreadyExists = await this.prisma.users.findUnique({
-        where: {
-          email: data.email,
-        },
-      });
+      const userAlreadyExists = await this.userExistsByEmail(data.email);
+
+      this.userTypeExists(data.user_type);
 
       if (data.user_type !== 'player') {
         badRequestMessage('Tipo de usuário inválido');
@@ -138,52 +162,6 @@ export class AuthService {
       this.logger.error(error);
       this.logger.error(
         `Error when register player: ${error.message}`,
-        error.stack,
-      );
-      throw error;
-    }
-  }
-
-  async registerAdmin(data: CreateAdmDto) {
-    try {
-      const userAlreadyExists = await this.prisma.users.findUnique({
-        where: {
-          email: data.email,
-        },
-      });
-
-      if (data.user_type !== 'adm') {
-        badRequestMessage('Tipo de usuário inválido');
-      }
-
-      if (userAlreadyExists) {
-        badRequestMessage('Conta já cadastrado');
-      }
-
-      const user = await this.prisma.users.create({
-        data: {
-          user_type: data.user_type,
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          created_by: data.created_by,
-          account_is_active: false,
-          account_activation_code: passwordResetCode(),
-          password: await passwordHash(data.password),
-        },
-      });
-
-      this.sendMailProducerService.sendMail({
-        email: user.email,
-        code: user.password_reset_code,
-        type: 'accountActivation',
-      });
-
-      return { user_id: user.id, message: 'Conta criada com sucesso' };
-    } catch (error) {
-      this.logger.error(error);
-      this.logger.error(
-        `Error when register admin: ${error.message}`,
         error.stack,
       );
       throw error;
@@ -251,6 +229,130 @@ export class AuthService {
       this.logger.error(error);
       this.logger.error(
         `Error when recovery password: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
+  // adm
+
+  async registerAdmin(data: CreateAdminDto) {
+    try {
+      const userAlreadyExists = await this.userExistsByEmail(data.email);
+
+      this.userTypeExists(data.user_type);
+
+      if (data.user_type !== 'admin') {
+        badRequestMessage('Tipo de usuário inválido');
+      }
+
+      if (userAlreadyExists) {
+        badRequestMessage('Conta já cadastrado');
+      }
+
+      const user = await this.prisma.users.create({
+        data: {
+          user_type: data.user_type,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          created_by: data.created_by,
+          account_is_active: false,
+          account_activation_code: activateAccountCode(),
+          password: await passwordHash(data.password),
+        },
+      });
+
+      this.sendMailProducerService.sendMail({
+        email: user.email,
+        code: user.account_activation_code,
+        type: 'accountActivation',
+      });
+
+      return {
+        user_id: user.id,
+        message: 'Conta criada com sucesso, aguarde a ativação da conta',
+      };
+    } catch (error) {
+      this.logger.error(error);
+      this.logger.error(
+        `Error when register admin: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
+  async activateAccountAdmin(data: ActivateAccountAdmDto) {
+    try {
+      const userExists = await this.userExistsByEmail(data.email);
+
+      if (!userExists) {
+        badRequestMessage('Conta não encontrada');
+      }
+
+      if (userExists.account_activation_code !== data.account_activation_code) {
+        badRequestMessage('Código de confirmação inválido');
+      }
+
+      if (isAfter(new Date(), userExists.code_expiration_date)) {
+        badRequestMessage('Código de confirmação expirado');
+      }
+
+      await this.prisma.users.update({
+        where: {
+          id: userExists.id,
+        },
+        data: {
+          account_is_active: true,
+          account_activation_code: null,
+          code_expiration_date: null,
+        },
+      });
+
+      return { message: 'Conta ativada com sucesso' };
+    } catch (error) {
+      this.logger.error(error);
+      this.logger.error(
+        `Error when activate account admin: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
+  async resendActivationCodeAdmin(data: { email: string }) {
+    try {
+      const userExists = await this.userExistsByEmail(data.email);
+
+      if (userExists.account_is_active) {
+        badRequestMessage('Conta já ativada');
+      }
+
+      const updateUser = await this.prisma.users.update({
+        where: {
+          id: userExists.id,
+        },
+        data: {
+          account_activation_code: activateAccountCode(),
+          code_expiration_date: addMinutes(new Date(), 30), // 30 minutes,
+        },
+      });
+
+      this.sendMailProducerService.sendMail({
+        email: updateUser.email,
+        code: updateUser.account_activation_code,
+        type: 'accountActivation',
+      });
+
+      return {
+        message: 'Foi enviado um código de confirmação para seu e-mail',
+      };
+    } catch (error) {
+      this.logger.error(error);
+      this.logger.error(
+        `Error when resend activation code admin: ${error.message}`,
         error.stack,
       );
       throw error;

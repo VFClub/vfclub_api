@@ -13,6 +13,10 @@ export function passwordResetCode() {
   return randomBytes(3).toString('hex').toUpperCase();
 }
 
+export function activateAccountCode() {
+  return randomBytes(3).toString('hex').toUpperCase();
+}
+
 export function fileNameHash(fileName: string) {
   const hash = createHash('SHA-1').update(fileName).digest('hex');
 

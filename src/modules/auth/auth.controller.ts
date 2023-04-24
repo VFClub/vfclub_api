@@ -5,7 +5,8 @@ import { IUserProps } from 'src/@types';
 import { CreatePlayerDto } from './dtos/create-player.dto';
 import { RequestRecoveryPasswordUserDto } from './dtos/request-recovery-password-user.dto';
 import { RecoveryPasswordUserDto } from './dtos/recovery-password-user.dto';
-import { CreateAdmDto } from './dtos/create-admin.dto';
+import { ActivateAccountAdmDto } from './dtos/activate-account.sto';
+import { CreateAdminDto } from './dtos/create-admin.dto';
 
 @Controller('/auth')
 export class AuthController {
@@ -23,7 +24,7 @@ export class AuthController {
   }
 
   @Post('/register/admin')
-  async registerAdmin(@Body() data: CreateAdmDto) {
+  async registerAdmin(@Body() data: CreateAdminDto) {
     return this.authService.registerAdmin(data);
   }
 
@@ -35,5 +36,15 @@ export class AuthController {
   @Post('/recovery-password')
   async recoveryPassword(@Body() data: RecoveryPasswordUserDto) {
     return this.authService.recoveryPassword(data);
+  }
+
+  @Post('/activate-account/admin')
+  async activateAccountAdmin(@Body() data: ActivateAccountAdmDto) {
+    return this.authService.activateAccountAdmin(data);
+  }
+
+  @Post('/resend-activation-code/admin')
+  async resendActivationCodeAdmin(@Body() data: { email: string }) {
+    return this.authService.resendActivationCodeAdmin(data);
   }
 }
