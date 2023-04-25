@@ -52,20 +52,14 @@ export class AuthService {
   }
 
   async userTypeExists(user_type: string) {
-    try {
-      if (user_type !== 'player' && user_type !== 'admin') {
-        badRequestMessage('Tipo de usuário inválido');
-      }
-    } catch (error) {
-      this.logger.error(error);
-      this.logger.error(
-        `Error when check user type exists: ${error.message}`,
-        error.stack,
-      );
+    if (user_type !== 'player' && user_type !== 'admin') {
+      return { message: 'Tipo de usuário inválido' };
     }
   }
 
   async login(data: IUserProps) {
+    this.userTypeExists(data.user_type);
+
     try {
       const user = await this.prisma.users.findUnique({
         where: {
@@ -75,8 +69,6 @@ export class AuthService {
           },
         },
       });
-
-      this.userTypeExists(data.user_type);
 
       if (!user) {
         notFoundMessage('Conta não encontrada');
@@ -99,11 +91,12 @@ export class AuthService {
     }
   }
 
-  async validateUser(email: string, password: string) {
+  async validateUser(email: string, password: string, user_type: string) {
+    this.userTypeExists(user_type);
     try {
       const user = await this.prisma.users.findFirst({
         where: {
-          email,
+          email: email,
         },
       });
 
@@ -129,10 +122,10 @@ export class AuthService {
   }
 
   async registerPlayer(data: CreatePlayerDto) {
+    this.userTypeExists(data.user_type);
+
     try {
       const userAlreadyExists = await this.userExistsByEmail(data.email);
-
-      this.userTypeExists(data.user_type);
 
       if (data.user_type !== 'player') {
         badRequestMessage('Tipo de usuário inválido');
@@ -172,6 +165,10 @@ export class AuthService {
     try {
       const userExists = await this.userExistsByEmail(data.email);
 
+      if (!userExists) {
+        badRequestMessage('Conta não encontrada');
+      }
+
       const userUpdated = await this.prisma.users.update({
         where: {
           id: userExists.id,
@@ -204,6 +201,10 @@ export class AuthService {
   async recoveryPassword(data: RecoveryPasswordUserDto) {
     try {
       const userExists = await this.userExistsByEmail(data.email);
+
+      if (!userExists) {
+        badRequestMessage('Conta não encontrada');
+      }
 
       if (userExists.password_reset_code !== data.password_reset_code) {
         badRequestMessage('Código de confirmação inválido');
@@ -238,10 +239,10 @@ export class AuthService {
   // adm
 
   async registerAdmin(data: CreateAdminDto) {
+    this.userTypeExists(data.user_type);
+
     try {
       const userAlreadyExists = await this.userExistsByEmail(data.email);
-
-      this.userTypeExists(data.user_type);
 
       if (data.user_type !== 'admin') {
         badRequestMessage('Tipo de usuário inválido');
@@ -325,6 +326,10 @@ export class AuthService {
   async resendActivationCodeAdmin(data: { email: string }) {
     try {
       const userExists = await this.userExistsByEmail(data.email);
+
+      if (!userExists) {
+        badRequestMessage('Conta não encontrada');
+      }
 
       if (userExists.account_is_active) {
         badRequestMessage('Conta já ativada');
