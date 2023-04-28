@@ -23,6 +23,7 @@ export class AuthController {
     return this.authService.registerPlayer(data);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('/register/admin')
   async registerAdmin(@Body() data: CreateAdminDto) {
     return this.authService.registerAdmin(data);

@@ -132,7 +132,7 @@ export class AuthService {
       }
 
       if (userAlreadyExists) {
-        badRequestMessage('Conta já cadastrado');
+        badRequestMessage('Conta já cadastrada');
       }
 
       if (!data.accepted_terms) {
@@ -249,7 +249,7 @@ export class AuthService {
       }
 
       if (userAlreadyExists) {
-        badRequestMessage('Conta já cadastrado');
+        badRequestMessage('Conta já cadastrada');
       }
 
       const user = await this.prisma.users.create({
