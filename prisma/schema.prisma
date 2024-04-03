@@ -18,8 +18,9 @@ model User {
   password     String
   user_type    String
 
-  name      String
-  last_name String
+  avatar_url String?
+  name       String
+  last_name  String
 
   // validation codes
   validation_code_expiration_date DateTime?
@@ -31,5 +32,103 @@ model User {
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
+  fighter    Fighter[]
+  live_match LiveMatch[]
+  match      Match[]
+  partner    Partner[]
+
   @@map("users")
+}
+
+model Fighter {
+  id Int @id @default(autoincrement())
+
+  name       String
+  last_name  String
+  avatar_url String
+  squad      String
+  category   String
+  points     Int?   @default(0)
+
+  created_by      Int
+  created_by_user User @relation(fields: [created_by], references: [id])
+
+  // date information
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  fighter1          LiveMatch[]        @relation("fighter1_id")
+  fighter2          LiveMatch[]        @relation("fighter2_id")
+  match_participant MatchParticipant[]
+
+  @@map("fighters")
+}
+
+model LiveMatch {
+  id Int @id @default(autoincrement())
+
+  about       String
+  start_date  DateTime
+  end_date    DateTime
+  fighter1    Int
+  fighter1_id Fighter  @relation(fields: [fighter1], references: [id], name: "fighter1_id")
+  fighter2    Int
+  fighter2_id Fighter  @relation(fields: [fighter2], references: [id], name: "fighter2_id")
+
+  created_by      Int
+  created_by_user User @relation(fields: [created_by], references: [id])
+
+  // date information
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("live_matches")
+}
+
+model Match {
+  id Int @id @default(autoincrement())
+
+  cover_image String
+  title       String
+  date        DateTime
+  about       String
+
+  participants MatchParticipant[]
+
+  created_by      Int
+  created_by_user User @relation(fields: [created_by], references: [id])
+
+  // date information
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("matches")
+}
+
+model MatchParticipant {
+  id Int @id @default(autoincrement())
+
+  match_id Int
+  match    Match @relation(fields: [match_id], references: [id])
+
+  fighter_id Int
+  fighter    Fighter @relation(fields: [fighter_id], references: [id])
+
+  @@map("match_participants")
+}
+
+model Partner {
+  id Int @id @default(autoincrement())
+
+  avatar_url  String
+  access_link String
+
+  created_by      Int
+  created_by_user User @relation(fields: [created_by], references: [id])
+
+  // date information
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("partners")
 }

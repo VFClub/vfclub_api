@@ -4,29 +4,29 @@ import { Logger, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 
 // service
-import { AuthService } from './auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthService } from './auth.service';
 
 // module
 import { ConfigModule } from '@nestjs/config';
-import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 // jwt
-import { LocalStrategy } from './strategies/local.strategy';
-import { JwtStrategy } from './strategies/jwt.strategy';
+// import { LocalStrategy } from './strategies/local.strategy';
 import { BullModule } from '@nestjs/bull';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 // configs
 import {
-  redis,
-  JwtModuleRegister,
   BullModuleRegisterQueue,
+  JwtModuleRegister,
+  redis,
 } from '../../utils/configs.utils';
 
 // mail
-import { SendMailProducerService } from 'src/jobs/mail/sendMail-producer-service.job';
 import { SendMailConsumer } from 'src/jobs/mail/sendMail-consumer.job';
+import { SendMailProducerService } from 'src/jobs/mail/sendMail-producer-service.job';
 import { CustomLoggerService } from 'src/logger/logger-service.config';
 
 @Module({
@@ -44,7 +44,7 @@ import { CustomLoggerService } from 'src/logger/logger-service.config';
   providers: [
     AuthService,
     PrismaService,
-    LocalStrategy,
+    // LocalStrategy,
     JwtModule,
     JwtStrategy,
     SendMailProducerService,
