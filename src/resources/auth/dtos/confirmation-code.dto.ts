@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class ConfirmationCodeDto {
   @IsNotEmpty({
@@ -15,7 +15,7 @@ export class ConfirmationCodeDto {
     example: 'joejohn@email.com',
     description: 'User email',
   })
-  email: string
+  email: string;
 
   @IsNotEmpty({
     message: 'Filling in the field ( code ) is required',
@@ -27,5 +27,5 @@ export class ConfirmationCodeDto {
     example: '123456',
     description: 'Confirmation code',
   })
-  code: string
+  code: string;
 }

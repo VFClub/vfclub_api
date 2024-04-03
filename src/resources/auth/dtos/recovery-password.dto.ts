@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsString, Matches } from 'class-validator'
-import { ConfirmationCodeDto } from './confirmation-code.dto'
-import { passwordRegEx } from '@/helpers/regex.helper'
-import { ApiProperty } from '@nestjs/swagger'
+import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { ConfirmationCodeDto } from './confirmation-code.dto';
+import { passwordRegEx } from '@/helpers/regex.helper';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RecoveryPasswordDto extends ConfirmationCodeDto {
   @IsNotEmpty({
@@ -18,5 +18,5 @@ export class RecoveryPasswordDto extends ConfirmationCodeDto {
     example: '123456',
     description: 'User password',
   })
-  password: string
+  password: string;
 }
