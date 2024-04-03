@@ -3,7 +3,7 @@ import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 // modules
-import { AuthModule } from './modules/auth/auth.module';
+import { AuthModule } from './resources/auth/auth.module';
 
 // configs
 import { CustomLoggerService } from './logger/logger-service.config';

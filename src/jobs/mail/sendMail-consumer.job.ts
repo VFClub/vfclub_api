@@ -1,10 +1,10 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { render } from '@react-email/render';
 import { Process, Processor } from '@nestjs/bull';
+import { render } from '@react-email/render';
 import { Job } from 'bull';
-import { ISendMailProps } from 'src/@types';
-import { ResetPasswordCodeEmail } from 'src/template-mail/reset-password-code';
 import { AccountActivationCodeEmail } from 'src/template-mail/account-activation-code';
+import { ResetPasswordCodeEmail } from 'src/template-mail/reset-password-code';
+import { ISendMailProps } from 'src/types';
 
 @Processor('sendMail-queue')
 export class SendMailConsumer {
