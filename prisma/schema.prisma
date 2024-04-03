@@ -10,21 +10,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id                      Int       @id @default(autoincrement())
-  user_type               String // adm or player
-  name                    String
-  email                   String    @unique
-  phone                   String
-  password                String
-  accepted_terms          Boolean?  @default(false) // only player
-  created_by              Int? // only adm
-  created_at              DateTime  @default(now())
-  updated_at              DateTime?
-  password_reset_code     String?
-  account_activation_code String? // only adm
-  account_is_active       Boolean?  @default(false) // only adm
-  code_expiration_date    DateTime?
+model User {
+  id Int @id @default(autoincrement())
 
-  @@unique([email, user_type], name: "email_user_type")
+  email        String  @unique
+  is_validated Boolean @default(false)
+  password     String
+  user_type    String
+
+  name      String
+  last_name String
+
+  // validation codes
+  validation_code_expiration_date DateTime?
+  email_validation_code           String?
+  password_reset_code             String?
+
+  // date information
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  @@map("users")
 }
