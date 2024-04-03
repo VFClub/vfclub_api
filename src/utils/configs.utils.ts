@@ -20,5 +20,5 @@ export const transport = {
 };
 
 export const BullModuleRegisterQueue = {
-  name: 'sendMail-queue',
+  name: 'confirmationCode-queue',
 };

@@ -4,7 +4,7 @@ import { Logger, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 
 // service
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { AuthService } from './auth.service';
 
 // module
@@ -25,9 +25,11 @@ import {
 } from '../../utils/configs.utils';
 
 // mail
-import { SendMailConsumer } from 'src/jobs/mail/sendMail-consumer.job';
-import { SendMailProducerService } from 'src/jobs/mail/sendMail-producer-service.job';
-import { CustomLoggerService } from 'src/logger/logger-service.config';
+
+import { UserSearchService } from '@/SearchDatabaseServices/user.service';
+import { ConfirmationCodeConsumer } from '@/jobs/send-email/confirmation-code/confirmation-code-consumer.job';
+import { ConfirmationCodeService } from '@/jobs/send-email/confirmation-code/confirmation-code-service.job';
+import { CustomLoggerService } from '@/logger/logger-service.config';
 
 @Module({
   imports: [
@@ -43,12 +45,18 @@ import { CustomLoggerService } from 'src/logger/logger-service.config';
   ],
   providers: [
     AuthService,
+
     PrismaService,
+
     LocalStrategy,
     JwtModule,
     JwtStrategy,
-    SendMailProducerService,
-    SendMailConsumer,
+
+    ConfirmationCodeConsumer,
+    ConfirmationCodeService,
+
+    UserSearchService,
+
     {
       provide: Logger,
       useClass: CustomLoggerService,

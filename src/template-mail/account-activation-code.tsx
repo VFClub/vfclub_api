@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import {
   Body,
   Column,
@@ -12,7 +14,6 @@ import {
   Section,
   Text,
 } from '@react-email/components';
-import * as React from 'react';
 
 interface AccountActivationCodeEmailProps {
   validationCode?: string;

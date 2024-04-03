@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
+    "jsx": "react",
+    "strict": true,
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "es2022",
     "sourceMap": true,
     "outDir": "./dist",
-    "jsx": "react",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
@@ -17,6 +18,13 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": [
+      "vitest/globals",
+      "jest",
+    ]
   }
 }

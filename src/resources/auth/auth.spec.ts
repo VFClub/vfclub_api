@@ -10,9 +10,9 @@
 // import { AuthController } from './auth.controller';
 
 // // services
+// import { UserSearchService } from '@/SearchDatabaseServices/user.service';
 // import { ConfirmationCodeService } from '@/jobs/send-email/confirmation-code/confirmation-code-service.job';
 // import { PrismaService } from '@/prisma/prisma.service';
-// import { UserSearchService } from '@/SearchDatabaseServices/user.service';
 // import { AuthService } from './auth.service';
 
 // // utils

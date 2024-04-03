@@ -1,24 +1,36 @@
+import { PrismaService } from '@/prisma/prisma.service';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
-
 import { compare } from 'bcrypt';
+import { addMinutes } from 'date-fns';
 
-import { SendMailProducerService } from 'src/jobs/mail/sendMail-producer-service.job';
+// services
+import { UserSearchService } from '@/SearchDatabaseServices/user.service';
+
+// jobs
+import { ConfirmationCodeService } from '@/jobs/send-email/confirmation-code/confirmation-code-service.job';
+
+// utils
+import {
+  generateConfirmationCode,
+  generatePasswordHash,
+} from '@/utils/hash.util';
+
+// dtos
 import { AuthUserDto } from './dtos/auth-user.dto';
+import { CreateUserDto } from './dtos/create-user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prismaService: PrismaService,
     private jwtService: JwtService,
-    private sendMailProducerService: SendMailProducerService,
+    private confirmationCodeService: ConfirmationCodeService,
     private logger: Logger,
+    private userSearchService: UserSearchService,
   ) {}
 
   async login(data: AuthUserDto) {
-    console.log(data);
-
     try {
       const user = await this.prismaService.user.findUnique({
         where: {
@@ -34,8 +46,11 @@ export class AuthService {
         }),
       };
     } catch (error) {
-      this.logger.error(error);
-      this.logger.error(`Error when login: ${error.message}`, error.stack);
+      this.logger.error(error as Error);
+      this.logger.error(
+        `Error when login: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
       throw error;
     }
   }
@@ -78,10 +93,45 @@ export class AuthService {
 
       return user;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error as Error);
       this.logger.error(
-        `Error when validate user: ${error.message}`,
-        error.stack,
+        `Error when login: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
+      throw error;
+    }
+  }
+
+  async register(data: CreateUserDto) {
+    try {
+      await this.userSearchService.userAlreadyExistsByEmail(data.email);
+
+      const confirmationCode = generateConfirmationCode();
+
+      const user = await this.prismaService.user.create({
+        data: {
+          ...data,
+          password: await generatePasswordHash(data.password),
+          email_validation_code: confirmationCode,
+          validation_code_expiration_date: addMinutes(new Date(), 30), // 30 minutes from now
+        },
+      });
+
+      await this.confirmationCodeService.handle({
+        email: user.email,
+        code: confirmationCode,
+        type: 'emailConfirmation',
+      });
+
+      return {
+        user_id: user.id,
+        message: 'User created successfully!',
+      };
+    } catch (error) {
+      this.logger.error(error as Error);
+      this.logger.error(
+        `Error when register: ${(error as Error).message}`,
+        (error as Error).stack,
       );
       throw error;
     }

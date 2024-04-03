@@ -19,8 +19,8 @@ model User {
   type         String
 
   avatar_url String?
-  name       String
-  last_name  String
+  name       String?
+  last_name  String?
 
   // validation codes
   validation_code_expiration_date DateTime?
