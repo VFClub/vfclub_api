@@ -13,9 +13,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
 // jwt
-// import { LocalStrategy } from './strategies/local.strategy';
 import { BullModule } from '@nestjs/bull';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
 
 // configs
 import {
@@ -44,7 +44,7 @@ import { CustomLoggerService } from 'src/logger/logger-service.config';
   providers: [
     AuthService,
     PrismaService,
-    // LocalStrategy,
+    LocalStrategy,
     JwtModule,
     JwtStrategy,
     SendMailProducerService,

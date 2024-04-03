@@ -16,7 +16,7 @@ model User {
   email        String  @unique
   is_validated Boolean @default(false)
   password     String
-  user_type    String
+  type         String
 
   avatar_url String?
   name       String
