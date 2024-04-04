@@ -62,6 +62,38 @@ export class FighterService {
     }
   }
 
+  async getFightersRanking() {
+    try {
+      const fighters = await this.prismaService.fighter.findMany({
+        select: {
+          id: true,
+          name: true,
+          last_name: true,
+          avatar_url: true,
+          squad: true,
+          category: true,
+          points: true,
+        },
+        orderBy: {
+          points: 'desc',
+        },
+      });
+
+      if (fighters.length === 0) {
+        return [];
+      }
+
+      return fighters;
+    } catch (error) {
+      this.logger.error(error as Error);
+      this.logger.error(
+        `Error when get fighters ranking: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
+      throw error;
+    }
+  }
+
   async addNewFighter(data: AddNewFighterDto) {
     try {
       const user = await this.userSearchService.userExistsById(data.created_by);

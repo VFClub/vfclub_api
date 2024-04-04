@@ -30,6 +30,11 @@ export class FighterController {
     return await this.fighterService.getFighters();
   }
 
+  @Get('/ranking')
+  async getFightersRanking() {
+    return await this.fighterService.getFightersRanking();
+  }
+
   @Get('/:fighter_id')
   async getFighterById(@Param('fighter_id') fighter_id: number) {
     return await this.fighterService.getFighterById(fighter_id);
