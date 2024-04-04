@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AdminModule } from './resources/admin/admin.module';
 import { AuthModule } from './resources/auth/auth.module';
 import { FighterModule } from './resources/fighter/fighter.module';
+import { LiveMatchModule } from './resources/live-match/live-match.module';
 import { PartnerModule } from './resources/partner/partner.module';
 import { ProfileModule } from './resources/profile/profile.module';
 
@@ -33,6 +34,7 @@ import { transport } from './utils/configs.utils';
     AdminModule,
     PartnerModule,
     FighterModule,
+    LiveMatchModule,
   ],
 })
 export class AppModule {}
