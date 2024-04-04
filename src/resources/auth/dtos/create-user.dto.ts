@@ -1,6 +1,13 @@
 import { USER_TYPE } from '@/enum/user_type.enum';
+import { passwordRegEx } from '@/helpers/regex.helper';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  Matches,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty({
@@ -23,6 +30,10 @@ export class CreateUserDto {
   })
   @IsString({
     message: 'The password must be a string',
+  })
+  @Matches(passwordRegEx, {
+    message:
+      'The password must have at least 8 characters consisting of: numbers, uppercase letters, lowercase letters and special characters.',
   })
   @ApiProperty({
     example: '123456',

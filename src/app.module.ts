@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 
 // modules
 import { AuthModule } from './resources/auth/auth.module';
+import { ProfileModule } from './resources/profile/profile.module';
 
 // configs
 import { CustomLoggerService } from './logger/logger-service.config';
@@ -25,6 +26,7 @@ import { transport } from './utils/configs.utils';
     }),
 
     AuthModule,
+    ProfileModule,
   ],
 })
 export class AppModule {}

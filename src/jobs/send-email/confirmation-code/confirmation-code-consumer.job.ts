@@ -13,30 +13,23 @@ export class ConfirmationCodeConsumer {
   @Process('confirmationCode-job')
   async handle(job: Job<ISendMailProps>) {
     const { data } = job;
-    console.log('ConfirmationCodeConsumer', data);
 
-    try {
-      const resetPasswordCodeEmailHtml = render(
-        ResetPasswordCodeEmail({ validationCode: data.code }),
-      );
+    const resetPasswordCodeEmailHtml = render(
+      ResetPasswordCodeEmail({ validationCode: data.code }),
+    );
 
-      const accountActivationCodeEmailHtml = render(
-        AccountActivationCodeEmail({ validationCode: data.code }),
-      );
+    const accountActivationCodeEmailHtml = render(
+      AccountActivationCodeEmail({ validationCode: data.code }),
+    );
 
-      await this.mailService.sendMail({
-        to: data.email,
-        from: process.env.MAIL_SENDER,
-        subject: 'Código para confirmação da conta',
-        html:
-          data.type === 'accountActivation'
-            ? accountActivationCodeEmailHtml
-            : resetPasswordCodeEmailHtml,
-      });
-
-      console.log('Email sent');
-    } catch (error) {
-      console.log('ConfirmationCodeConsumer error', error);
-    }
+    await this.mailService.sendMail({
+      to: data.email,
+      from: process.env.MAIL_SENDER,
+      subject: 'Código para confirmação da conta',
+      html:
+        data.type === 'accountActivation'
+          ? accountActivationCodeEmailHtml
+          : resetPasswordCodeEmailHtml,
+    });
   }
 }
