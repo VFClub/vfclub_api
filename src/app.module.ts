@@ -7,6 +7,7 @@ import { AdminModule } from './resources/admin/admin.module';
 import { AuthModule } from './resources/auth/auth.module';
 import { FighterModule } from './resources/fighter/fighter.module';
 import { LiveMatchModule } from './resources/live-match/live-match.module';
+import { MatchModule } from './resources/match/match.module';
 import { PartnerModule } from './resources/partner/partner.module';
 import { ProfileModule } from './resources/profile/profile.module';
 
@@ -35,6 +36,7 @@ import { transport } from './utils/configs.utils';
     PartnerModule,
     FighterModule,
     LiveMatchModule,
+    MatchModule,
   ],
 })
 export class AppModule {}
