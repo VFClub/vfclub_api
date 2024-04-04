@@ -3,6 +3,7 @@ import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 // modules
+import { AdminModule } from './resources/admin/admin.module';
 import { AuthModule } from './resources/auth/auth.module';
 import { ProfileModule } from './resources/profile/profile.module';
 
@@ -27,6 +28,7 @@ import { transport } from './utils/configs.utils';
 
     AuthModule,
     ProfileModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

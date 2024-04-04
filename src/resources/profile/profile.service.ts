@@ -30,7 +30,7 @@ export class ProfileService {
         },
       });
 
-      return { user };
+      return user;
     } catch (error) {
       this.logger.error(error as Error);
       this.logger.error(
@@ -49,9 +49,7 @@ export class ProfileService {
         where: {
           id: user_id,
         },
-        data: {
-          ...data,
-        },
+        data,
       });
 
       return {
