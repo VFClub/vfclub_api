@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import {
   Body,
   Column,
@@ -12,7 +14,6 @@ import {
   Section,
   Text,
 } from '@react-email/components';
-import * as React from 'react';
 
 interface ResetPasswordCodeEmailProps {
   validationCode?: string;
@@ -24,7 +25,7 @@ export const ResetPasswordCodeEmail = ({
   <Html>
     <Head />
 
-    <Preview>Recuperação de senha</Preview>
+    <Preview>Recuperar senha</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoContainer}>
@@ -38,8 +39,8 @@ export const ResetPasswordCodeEmail = ({
 
         <Heading style={h1}>Recuperação de senha</Heading>
         <Text style={heroText}>
-          Seu código de recuperação de senha está abaixo - digite-o no
-          aplicativo VF Club
+          Seu código de confirmação para trocar sua senha está abaixo - digite-o
+          no aplicativo VF Club
         </Text>
 
         <Section style={codeBox}>

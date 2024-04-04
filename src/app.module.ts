@@ -1,31 +1,42 @@
+import { MailerModule } from '@nestjs-modules/mailer';
 import { Logger, Module } from '@nestjs/common';
-
 import { ConfigModule } from '@nestjs/config';
 
 // modules
-import { PrismaModule } from './prisma/prisma.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { MailerModule } from '@nestjs-modules/mailer';
+import { AdminModule } from './resources/admin/admin.module';
+import { AuthModule } from './resources/auth/auth.module';
+import { FighterModule } from './resources/fighter/fighter.module';
+import { LiveMatchModule } from './resources/live-match/live-match.module';
+import { MatchModule } from './resources/match/match.module';
+import { PartnerModule } from './resources/partner/partner.module';
+import { ProfileModule } from './resources/profile/profile.module';
 
 // configs
-import { transport } from './utils/configs.utils';
 import { CustomLoggerService } from './logger/logger-service.config';
+import { transport } from './utils/configs.utils';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    PrismaModule,
-    AuthModule,
-    MailerModule.forRoot({
-      transport,
-    }),
-  ],
-
   providers: [
     {
       provide: Logger,
       useClass: CustomLoggerService,
     },
+  ],
+
+  imports: [
+    ConfigModule.forRoot(),
+
+    MailerModule.forRoot({
+      transport,
+    }),
+
+    AuthModule,
+    ProfileModule,
+    AdminModule,
+    PartnerModule,
+    FighterModule,
+    LiveMatchModule,
+    MatchModule,
   ],
 })
 export class AppModule {}
