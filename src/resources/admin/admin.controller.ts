@@ -1,7 +1,11 @@
-import { Controller, Delete, Param } from '@nestjs/common';
+import { Controller, Delete, Param, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 
 @Controller('/admin')
+@ApiTags('Admin')
+@UseGuards(AuthGuard('jwt'))
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 

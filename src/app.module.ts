@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 // modules
 import { AdminModule } from './resources/admin/admin.module';
 import { AuthModule } from './resources/auth/auth.module';
+import { PartnerModule } from './resources/partner/partner.module';
 import { ProfileModule } from './resources/profile/profile.module';
 
 // configs
@@ -29,6 +30,7 @@ import { transport } from './utils/configs.utils';
     AuthModule,
     ProfileModule,
     AdminModule,
+    PartnerModule,
   ],
 })
 export class AppModule {}
