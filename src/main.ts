@@ -9,7 +9,7 @@ import { Env } from './env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn', 'debug', 'verbose'],
+    logger: ['error', 'warn', 'debug'],
   });
 
   // Swagger

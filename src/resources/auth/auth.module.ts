@@ -21,7 +21,6 @@ import { LocalStrategy } from './strategies/local.strategy';
 import {
   BullModuleRegisterQueue,
   JwtModuleRegister,
-  redis,
 } from '../../utils/configs.utils';
 
 // mail
@@ -38,7 +37,11 @@ import { CustomLoggerService } from '@/logger/logger-service.config';
     JwtModule.register(JwtModuleRegister),
 
     BullModule.forRoot({
-      redis,
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASSWORD,
+      },
     }),
 
     BullModule.registerQueue(BullModuleRegisterQueue),
