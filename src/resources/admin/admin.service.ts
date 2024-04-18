@@ -16,6 +16,7 @@ export class AdminService {
       const users = await this.prismaService.user.findMany({
         where: {
           type: USER_TYPE.ADMIN,
+          deleted_at: null,
         },
       });
 
