@@ -1,4 +1,4 @@
-import { Controller, Delete, Param, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
@@ -8,6 +8,11 @@ import { AdminService } from './admin.service';
 @UseGuards(AuthGuard('jwt'))
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
+
+  @Get('/users')
+  async getUsers() {
+    return this.adminService.getUsers();
+  }
 
   @Delete('/user/:user_id')
   async disableUser(@Param('user_id') user_id: number) {

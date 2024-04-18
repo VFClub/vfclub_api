@@ -16,7 +16,7 @@ import { EditPartnerDto } from './dtos/edit-partner.dto';
 import { PartnerService } from './partner.service';
 
 @Controller('/partner')
-@ApiTags('partner')
+@ApiTags('Partner')
 @UseGuards(AuthGuard('jwt'))
 export class PartnerController {
   constructor(private readonly partnerService: PartnerService) {}
