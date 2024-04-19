@@ -26,6 +26,11 @@ export class PartnerController {
     return this.partnerService.getPartners();
   }
 
+  @Get('/:partner_id')
+  async getPartnerById(@Param('partner_id') partner_id: number) {
+    return this.partnerService.getPartnerById(partner_id);
+  }
+
   @Post('/')
   async addNewPartner(@Body() data: AddNewPartnerDto) {
     return this.partnerService.addNewPartner(data);

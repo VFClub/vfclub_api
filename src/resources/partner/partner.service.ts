@@ -40,6 +40,29 @@ export class PartnerService {
     }
   }
 
+  async getPartnerById(partner_id: number) {
+    try {
+      const partner = await this.prismaService.partner.findUnique({
+        where: {
+          id: partner_id,
+        },
+      });
+
+      if (!partner) {
+        throw new NotFoundException('Partner not found');
+      }
+
+      return partner;
+    } catch (error) {
+      this.logger.error(error as Error);
+      this.logger.error(
+        `Error when get partner by id: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
+      throw error;
+    }
+  }
+
   async addNewPartner(data: AddNewPartnerDto) {
     try {
       const user = await this.userSearchService.userExistsById(data.created_by);
